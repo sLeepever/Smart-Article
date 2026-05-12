@@ -45,7 +45,7 @@ export default function SettingsPage() {
   }, []);
 
   async function loadConfigs() {
-    const res = await fetch("/api/settings/llm");
+    const res = await fetch("/api/settings/llm", { cache: "no-store" });
     const data = await res.json();
     setConfigs(data.configs ?? []);
   }

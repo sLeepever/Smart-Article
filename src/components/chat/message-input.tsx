@@ -27,7 +27,7 @@ export default function MessageInput({ onSend, disabled }: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch("/api/settings/llm")
+    fetch("/api/settings/llm", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => {
         const list: LLMConfig[] = data.configs ?? [];

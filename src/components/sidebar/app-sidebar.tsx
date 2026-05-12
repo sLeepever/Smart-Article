@@ -1,20 +1,38 @@
 "use client";
 
-import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import ProjectList from "./project-list";
 import { useSidebarRefresh } from "./sidebar-refresh-context";
 import { Settings, LogOut, Plus } from "lucide-react";
 import Link from "next/link";
+import { useSession, signOut } from "@/lib/auth-client";
 
 export default function AppSidebar() {
   const { data: session } = useSession();
   const router = useRouter();
-  const { refreshKey } = useSidebarRefresh();
+  const { refreshKey, triggerRefresh } = useSidebarRefresh();
+  const [creating, setCreating] = useState(false);
 
   async function handleSignOut() {
     await signOut();
     router.push("/login");
+  }
+
+  async function handleNewProject() {
+    if (creating) return;
+    setCreating(true);
+    const res = await fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: "新论文项目" }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      triggerRefresh();
+      router.push(`/chat/${data.project.id}`);
+    }
+    setCreating(false);
   }
 
   return (
@@ -34,14 +52,15 @@ export default function AppSidebar() {
 
       {/* New project button */}
       <div className="px-3 py-3">
-        <Link
-          href="/chat"
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+        <button
+          onClick={handleNewProject}
+          disabled={creating}
+          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-60"
           style={{ background: "var(--primary-light)", color: "var(--primary)" }}
         >
           <Plus size={16} />
-          新建论文项目
-        </Link>
+          {creating ? "创建中..." : "新建论文项目"}
+        </button>
       </div>
 
       {/* Project list */}
@@ -77,3 +96,4 @@ export default function AppSidebar() {
     </aside>
   );
 }
+

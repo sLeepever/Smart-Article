@@ -19,7 +19,7 @@ export default function ProjectList({ refreshKey }: { refreshKey?: number }) {
   const currentProjectId = params?.projectId as string | undefined;
 
   useEffect(() => {
-    fetch("/api/projects")
+    fetch("/api/projects", { cache: "no-store" })
       .then((r) => r.json())
       .then((data) => setProjects(data.projects ?? []))
       .catch(() => {});
