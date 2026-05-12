@@ -68,6 +68,12 @@ export const LLM_MODEL_SUGGESTIONS: Record<LLMProviderType, string[]> = {
 };
 
 export const TOOL_STATUS_MESSAGES: Record<string, string> = {
+  // Sub-agent handoffs (supervisor → agent)
+  literature_agent: "文献检索中，请稍候...",
+  writing_agent: "写作中，请稍候...",
+  review_agent: "审校中，请稍候...",
+  aigc_reduction_agent: "降 AIGC 率改写中，请稍候...",
+  // Internal tool calls (shown when supervisor uses tools directly)
   semantic_scholar_search: "正在检索学术文献中",
   crossref_search: "正在通过 CrossRef 验证文献",
   verify_doi: "正在验证文献真实性",

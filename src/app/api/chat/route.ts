@@ -84,6 +84,11 @@ export async function POST(req: Request) {
         for await (const [chunk, metadata] of graphStream) {
           const agentName = (metadata as { langgraph_node?: string })?.langgraph_node ?? "supervisor";
 
+          // Only stream tokens from the supervisor/orchestrator node
+          // Sub-agent outputs (literature_agent, writing_agent, etc.) are internal;
+          // the supervisor will summarize them in its own reply.
+          if (agentName !== "supervisor") continue;
+
           // Tool call status messages
           if (chunk.tool_calls && Array.isArray(chunk.tool_calls) && chunk.tool_calls.length > 0) {
             const toolName = (chunk.tool_calls[0] as { name: string }).name;
@@ -102,7 +107,8 @@ export async function POST(req: Request) {
                 ? chunk.content.map((c: unknown) => (typeof c === "object" && c !== null && "text" in c) ? (c as {text: string}).text : "").join("")
                 : "";
 
-            if (text && agentName !== "tools") {
+            // Filter out LangGraph internal handoff messages
+            if (text && !text.includes("Successfully transferred")) {
               fullAssistantMessage += text;
               send({ type: "token", content: text, agent: agentName });
             }
