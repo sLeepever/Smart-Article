@@ -1,26 +1,93 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7fbf7;
+  --foreground: #1a3a1a;
+  --surface: #ffffff;
+  --border: #d4e8d4;
+  --primary: #4a8c4a;
+  --primary-light: #c8e6c9;
+  --primary-hover: #3a7a3a;
+  --accent: #fffde7;
+  --accent-border: #f9e04a;
+  --text-secondary: #5a7a5a;
+  --status-bg: #f0f7f0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+  --color-accent-border: var(--accent-border);
+  --color-text-secondary: var(--text-secondary);
+  --color-status-bg: var(--status-bg);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Noto Serif SC", "Source Han Serif SC", Georgia, "Times New Roman", serif;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* Prose styles for markdown content */
+.prose-academic {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--foreground);
+}
+.prose-academic h1,
+.prose-academic h2,
+.prose-academic h3 {
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: var(--foreground);
+}
+.prose-academic p {
+  margin-bottom: 1em;
+  text-indent: 2em;
+}
+.prose-academic ul,
+.prose-academic ol {
+  padding-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+/* Status message animation */
+@keyframes ellipsis {
+  0% { content: ""; }
+  33% { content: "."; }
+  66% { content: ".."; }
+  100% { content: "..."; }
+}
+.status-dots::after {
+  content: "";
+  animation: ellipsis 1.5s infinite;
 }
