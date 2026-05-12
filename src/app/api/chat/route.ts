@@ -11,6 +11,8 @@ import { headers } from "next/headers";
 import { TOOL_STATUS_MESSAGES } from "@/lib/constants";
 import type { LLMProviderType } from "@/lib/constants";
 
+const DEFAULT_TITLE = "新论文项目";
+
 export async function POST(req: Request) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -117,6 +119,27 @@ export async function POST(req: Request) {
             content: fullAssistantMessage,
             messageType,
           });
+        }
+
+        // Sync project title from topic (set by orchestrator) or first user message
+        const [latestProject] = await db
+          .select({ title: projects.title, topic: projects.topic })
+          .from(projects)
+          .where(eq(projects.id, projectId));
+
+        if (latestProject) {
+          if (latestProject.topic) {
+            await db.update(projects)
+              .set({ title: latestProject.topic })
+              .where(eq(projects.id, projectId));
+          } else if (latestProject.title === DEFAULT_TITLE) {
+            const trimmed = message.trim().slice(0, 20);
+            if (trimmed) {
+              await db.update(projects)
+                .set({ title: trimmed })
+                .where(eq(projects.id, projectId));
+            }
+          }
         }
 
         send({ type: "done" });

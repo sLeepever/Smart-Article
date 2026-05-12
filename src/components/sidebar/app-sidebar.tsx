@@ -3,12 +3,14 @@
 import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import ProjectList from "./project-list";
+import { useSidebarRefresh } from "./sidebar-refresh-context";
 import { Settings, LogOut, Plus } from "lucide-react";
 import Link from "next/link";
 
 export default function AppSidebar() {
   const { data: session } = useSession();
   const router = useRouter();
+  const { refreshKey } = useSidebarRefresh();
 
   async function handleSignOut() {
     await signOut();
@@ -47,7 +49,7 @@ export default function AppSidebar() {
         <p className="text-xs font-medium px-1 mb-2" style={{ color: "var(--text-secondary)" }}>
           历史项目
         </p>
-        <ProjectList />
+        <ProjectList refreshKey={refreshKey} />
       </div>
 
       {/* Footer */}

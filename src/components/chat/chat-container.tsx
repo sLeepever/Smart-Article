@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import MessageList from "./message-list";
 import MessageInput from "./message-input";
+import { useSidebarRefresh } from "@/components/sidebar/sidebar-refresh-context";
 
 export type Message = {
   id: string;
@@ -23,6 +24,7 @@ export default function ChatContainer({ projectId }: { projectId: string }) {
   const [statusMessage, setStatusMessage] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  const { triggerRefresh } = useSidebarRefresh();
 
   // Load message history
   useEffect(() => {
@@ -115,6 +117,7 @@ export default function ChatContainer({ projectId }: { projectId: string }) {
               }
               setStreamingContent("");
               setStatusMessage("");
+              triggerRefresh();
             } else if (event.type === "error") {
               setMessages((prev) => [
                 ...prev,

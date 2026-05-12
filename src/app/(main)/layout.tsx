@@ -4,6 +4,7 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import AppSidebar from "@/components/sidebar/app-sidebar";
+import { SidebarRefreshProvider } from "@/components/sidebar/sidebar-refresh-context";
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { data: session, isPending } = useSession();
@@ -28,9 +29,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   if (!session) return null;
 
   return (
-    <div className="h-full flex" style={{ background: "var(--background)" }}>
-      <AppSidebar />
-      <main className="flex-1 overflow-hidden">{children}</main>
-    </div>
+    <SidebarRefreshProvider>
+      <div className="h-full flex" style={{ background: "var(--background)" }}>
+        <AppSidebar />
+        <main className="flex-1 overflow-hidden">{children}</main>
+      </div>
+    </SidebarRefreshProvider>
   );
 }

@@ -12,7 +12,7 @@ type Project = {
   createdAt: number;
 };
 
-export default function ProjectList() {
+export default function ProjectList({ refreshKey }: { refreshKey?: number }) {
   const [projects, setProjects] = useState<Project[]>([]);
   const params = useParams();
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function ProjectList() {
       .then((r) => r.json())
       .then((data) => setProjects(data.projects ?? []))
       .catch(() => {});
-  }, []);
+  }, [refreshKey]);
 
   async function handleDelete(id: string, e: React.MouseEvent) {
     e.preventDefault();
