@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   if (!session) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { projectId, message } = body as { projectId: string; message: string };
+  const { projectId, message, llmConfigId } = body as { projectId: string; message: string; llmConfigId?: string };
 
   if (!projectId || !message?.trim()) {
     return Response.json({ error: "Missing projectId or message" }, { status: 400 });
@@ -32,11 +32,27 @@ export async function POST(req: Request) {
 
   if (!project) return Response.json({ error: "Project not found" }, { status: 404 });
 
-  // Load LLM config
-  const [config] = await db
-    .select()
-    .from(llmConfigs)
-    .where(eq(llmConfigs.userId, session.user.id));
+  // Load LLM config: use specified or fallback to default
+  let config;
+  if (llmConfigId) {
+    [config] = await db
+      .select()
+      .from(llmConfigs)
+      .where(and(eq(llmConfigs.id, llmConfigId), eq(llmConfigs.userId, session.user.id)));
+  }
+  if (!config) {
+    [config] = await db
+      .select()
+      .from(llmConfigs)
+      .where(and(eq(llmConfigs.userId, session.user.id), eq(llmConfigs.isDefault, true)));
+  }
+  if (!config) {
+    // Last resort: any config
+    [config] = await db
+      .select()
+      .from(llmConfigs)
+      .where(eq(llmConfigs.userId, session.user.id));
+  }
 
   if (!config) {
     return Response.json({ error: "请先在设置页面配置 LLM 供应商" }, { status: 400 });

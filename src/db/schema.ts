@@ -54,16 +54,17 @@ export const verification = sqliteTable("verification", {
 export const llmConfigs = sqliteTable("llm_configs", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+  name: text("name").notNull().default("默认配置"),
   providerType: text("provider_type").notNull(), // 'openai_chat' | 'openai_response' | 'claude' | 'gemini'
   baseUrl: text("base_url").notNull(),
   apiKeyEnc: text("api_key_enc").notNull(),
   apiKeyIv: text("api_key_iv").notNull(),
   modelName: text("model_name").notNull(),
-  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  isDefault: integer("is_default", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
 }, (t) => [
-  uniqueIndex("llm_configs_user_id_unique").on(t.userId),
+  index("llm_configs_user_id_idx").on(t.userId),
 ]);
 
 export const projects = sqliteTable("projects", {

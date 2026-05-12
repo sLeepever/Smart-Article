@@ -46,7 +46,7 @@ export default function ChatContainer({ projectId }: { projectId: string }) {
   }, [projectId]);
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, llmConfigId?: string) => {
       if (isStreaming) return;
 
       const userMsg: Message = {
@@ -67,7 +67,7 @@ export default function ChatContainer({ projectId }: { projectId: string }) {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ projectId, message: content }),
+          body: JSON.stringify({ projectId, message: content, llmConfigId }),
           signal: abort.signal,
         });
 
